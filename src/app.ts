@@ -1,21 +1,40 @@
 import bodyParser from "body-parser";
+import cors from "cors";
 import express, { Application } from "express";
 import { Database } from "sqlite3";
 
 const app = express();
 const jsonParser = bodyParser.json();
 
+app.use(cors());
+
+type Ride = {
+  startLat: number | string;
+  startLong: number | string;
+  endLat: number | string;
+  endLong: number | string;
+  riderName: string;
+  driverName: string;
+  driverVehicle: string;
+};
+
 export default (db: Database): Application => {
   app.get("/health", (req, res) => res.send("Healthy"));
 
   app.post("/rides", jsonParser, (req, res) => {
-    const startLatitude = Number(req.body.start_lat);
-    const startLongitude = Number(req.body.start_long);
-    const endLatitude = Number(req.body.end_lat);
-    const endLongitude = Number(req.body.end_long);
-    const riderName = req.body.rider_name;
-    const driverName = req.body.driver_name;
-    const driverVehicle = req.body.driver_vehicle;
+    const {
+      startLat,
+      startLong,
+      endLat,
+      endLong,
+      riderName,
+      driverName,
+      driverVehicle,
+    } = req.body as Ride;
+    const startLatitude = Number(startLat);
+    const startLongitude = Number(startLong);
+    const endLatitude = Number(endLat);
+    const endLongitude = Number(endLong);
 
     if (
       startLatitude < -90 ||
@@ -23,7 +42,7 @@ export default (db: Database): Application => {
       startLongitude < -180 ||
       startLongitude > 180
     ) {
-      return res.send({
+      return res.status(422).send({
         error_code: "VALIDATION_ERROR",
         message:
           "Start latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively",
@@ -36,7 +55,7 @@ export default (db: Database): Application => {
       endLongitude < -180 ||
       endLongitude > 180
     ) {
-      return res.send({
+      return res.status(422).send({
         error_code: "VALIDATION_ERROR",
         message:
           "End latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively",
@@ -44,34 +63,34 @@ export default (db: Database): Application => {
     }
 
     if (typeof riderName !== "string" || riderName.length < 1) {
-      return res.send({
+      return res.status(422).send({
         error_code: "VALIDATION_ERROR",
         message: "Rider name must be a non empty string",
       });
     }
 
     if (typeof driverName !== "string" || driverName.length < 1) {
-      return res.send({
+      return res.status(422).send({
         error_code: "VALIDATION_ERROR",
         message: "Rider name must be a non empty string",
       });
     }
 
     if (typeof driverVehicle !== "string" || driverVehicle.length < 1) {
-      return res.send({
+      return res.status(422).send({
         error_code: "VALIDATION_ERROR",
         message: "Rider name must be a non empty string",
       });
     }
 
     const values = [
-      req.body.start_lat,
-      req.body.start_long,
-      req.body.end_lat,
-      req.body.end_long,
-      req.body.rider_name,
-      req.body.driver_name,
-      req.body.driver_vehicle,
+      startLat,
+      startLong,
+      endLat,
+      endLong,
+      riderName,
+      driverName,
+      driverVehicle,
     ];
 
     const result = db.run(
@@ -79,7 +98,7 @@ export default (db: Database): Application => {
       values,
       function (err) {
         if (err) {
-          return res.send({
+          return res.status(500).send({
             error_code: "SERVER_ERROR",
             message: "Unknown error",
           });
@@ -90,13 +109,13 @@ export default (db: Database): Application => {
           this.lastID,
           (err, rows) => {
             if (err) {
-              return res.send({
+              return res.status(500).send({
                 error_code: "SERVER_ERROR",
                 message: "Unknown error",
               });
             }
 
-            res.send(rows);
+            res.send(rows[0]);
           },
         );
       },
@@ -104,16 +123,24 @@ export default (db: Database): Application => {
   });
 
   app.get("/rides", (req, res) => {
-    db.all("SELECT * FROM Rides", (err, rows) => {
+    const { offset, limit } = req.query;
+    let sqlQuery = `SELECT * FROM Rides`;
+    if (limit !== undefined) {
+      sqlQuery = `${sqlQuery} LIMIT ${limit}`;
+    }
+    if (offset !== undefined) {
+      sqlQuery = `${sqlQuery} OFFSET ${offset}`;
+    }
+    db.all(sqlQuery, (err, rows) => {
       if (err) {
-        return res.send({
+        return res.status(500).send({
           error_code: "SERVER_ERROR",
           message: "Unknown error",
         });
       }
 
       if (rows.length === 0) {
-        return res.send({
+        return res.status(404).send({
           error_code: "RIDES_NOT_FOUND_ERROR",
           message: "Could not find any rides",
         });
@@ -128,20 +155,20 @@ export default (db: Database): Application => {
       `SELECT * FROM Rides WHERE rideID='${req.params.id}'`,
       (err, rows) => {
         if (err) {
-          return res.send({
+          return res.status(500).send({
             error_code: "SERVER_ERROR",
             message: "Unknown error",
           });
         }
 
         if (rows.length === 0) {
-          return res.send({
+          return res.status(404).send({
             error_code: "RIDES_NOT_FOUND_ERROR",
             message: "Could not find any rides",
           });
         }
 
-        res.send(rows);
+        res.send(rows[0]);
       },
     );
   });
