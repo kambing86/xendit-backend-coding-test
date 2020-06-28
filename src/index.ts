@@ -1,16 +1,15 @@
 import fs from "fs";
 import jsyaml from "js-yaml";
-import { verbose } from "sqlite3";
 import swaggerUi, { JsonObject } from "swagger-ui-express";
 import app from "./app";
+import db from "./db";
 import buildSchemas from "./schemas";
 
 const port = 8010;
-const sqlite3 = verbose();
-const db = new sqlite3.Database(":memory:");
 
-db.serialize(() => {
-  buildSchemas(db);
+(async () => {
+  await db.serialize();
+  await buildSchemas(db);
 
   const application = app(db);
 
@@ -21,4 +20,4 @@ db.serialize(() => {
   const spec = fs.readFileSync("./doc/swagger.yml", "utf8");
   const oasDoc = jsyaml.safeLoad(spec) as JsonObject;
   application.use("/api-docs", swaggerUi.serve, swaggerUi.setup(oasDoc));
-});
+})();
