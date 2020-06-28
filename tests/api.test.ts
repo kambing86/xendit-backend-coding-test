@@ -1,11 +1,7 @@
 import { expect } from "chai";
 import { Application } from "express";
 import request, { Test } from "supertest";
-import app, {
-  RIDES_NOT_FOUND_ERROR,
-  SERVER_ERROR,
-  VALIDATION_ERROR,
-} from "../src/app";
+import app, { RIDES_NOT_FOUND_ERROR, VALIDATION_ERROR } from "../src/app";
 import getDB, { DB } from "../src/getDB";
 import buildSchemas from "../src/schemas";
 import { RideInput } from "../src/types";

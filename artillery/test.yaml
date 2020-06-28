@@ -1,0 +1,32 @@
+config:
+  target: "http://localhost:8010"
+  tls:
+    rejectUnauthorized: false
+  phases:
+    - duration: 60
+      arrivalRate: 20
+      rampTo: 200
+  payload:
+    path: "rides.csv"
+    fields:
+      - "startLat"
+      - "startLong"
+      - "endLat"
+      - "endLong"
+      - "riderName"
+      - "driverName"
+      - "driverVehicle"
+scenarios:
+  - flow:
+      - post:
+          url: "/rides"
+          json:
+            startLat: "{{ startLat }}"
+            startLong: "{{ startLong }}"
+            endLat: "{{ endLat }}"
+            endLong: "{{ endLong }}"
+            riderName: "{{ riderName }}"
+            driverName: "{{ driverName }}"
+            driverVehicle: "{{ driverVehicle }}"
+      - get:
+          url: "/rides"

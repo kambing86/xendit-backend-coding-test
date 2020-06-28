@@ -120,6 +120,8 @@ export default (db: DB): Application => {
     let sqlQuery = `SELECT * FROM Rides`;
     if (limit !== undefined) {
       sqlQuery = `${sqlQuery} LIMIT ${limit}`;
+    } else {
+      sqlQuery = `${sqlQuery} LIMIT 100`;
     }
     if (offset !== undefined) {
       sqlQuery = `${sqlQuery} OFFSET ${offset}`;
