@@ -1,4 +1,4 @@
-import { DB } from "./db";
+import { DB } from "./getDB";
 
 export default async (db: DB): Promise<DB> => {
   const createRideTableSchema = `
