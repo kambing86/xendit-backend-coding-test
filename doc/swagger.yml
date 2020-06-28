@@ -1,0 +1,175 @@
+openapi: 3.0.1
+info:
+  title: Xendit
+  description: "This is a sample server for Xendit Coding Test"
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: kambing860210@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:8010/
+tags:
+  - name: health
+    description: Health check endpoint
+  - name: rides
+    description: Everything about your Rides
+paths:
+  /health:
+    get:
+      tags:
+        - health
+      summary: Get health status
+      responses:
+        200:
+          description: Success
+  /rides:
+    post:
+      tags:
+        - rides
+      summary: Add a new ride
+      requestBody:
+        description: Ride object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RideInput"
+        required: true
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RideResponse"
+        422:
+          description: Invalid input
+        500:
+          description: Server error
+    get:
+      tags:
+        - rides
+      summary: Get rides with pagination
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: The numbers of items to return
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RideResponse"
+        404:
+          description: Ride not found
+        500:
+          description: Server error
+  /rides/{id}:
+    get:
+      tags:
+        - rides
+      summary: Find Ride by ID
+      description: Return a single ride
+      parameters:
+        - name: id
+          in: path
+          description: ID of ride to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RideResponse"
+        404:
+          description: Ride not found
+        500:
+          description: Server error
+components:
+  schemas:
+    RideInput:
+      required:
+        - startLat
+        - startLong
+        - endLat
+        - endLong
+        - riderName
+        - driverName
+        - driverVehicle
+      type: object
+      properties:
+        startLat:
+          oneOf:
+            - type: integer
+              format: int64
+            - type: string
+        startLong:
+          oneOf:
+            - type: integer
+              format: int64
+            - type: string
+        endLat:
+          oneOf:
+            - type: integer
+              format: int64
+            - type: string
+        endLong:
+          oneOf:
+            - type: integer
+              format: int64
+            - type: string
+        riderName:
+          type: string
+        driverName:
+          type: string
+        driverVehicle:
+          type: string
+      example:
+        startLat: 10
+        startLong: 20
+        endLat: 30
+        endLong: 40
+        riderName: a
+        driverName: b
+        driverVehicle: c
+    RideResponse:
+      allOf:
+        - $ref: "#/components/schemas/RideInput"
+        - type: object
+          required:
+            - rideID
+          properties:
+            rideID:
+              type: integer
+              format: int64
+            created:
+              type: string
+      example:
+        rideID: 1
+        startLat: 10
+        startLong: 20
+        endLat: 30
+        endLong: 40
+        riderName: a
+        driverName: b
+        driverVehicle: c
+        created: "2020-06-28 12:22:17"
