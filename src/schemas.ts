@@ -1,6 +1,6 @@
-import { Database } from "sqlite3";
+import { DB } from "./db";
 
-export default (db: Database): Database => {
+export default async (db: DB): Promise<DB> => {
   const createRideTableSchema = `
         CREATE TABLE Rides
         (
@@ -16,7 +16,7 @@ export default (db: Database): Database => {
         )
     `;
 
-  db.run(createRideTableSchema);
+  await db.run(createRideTableSchema);
 
   return db;
 };
