@@ -2,22 +2,17 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import express, { Application } from "express";
 import { RunResult } from "sqlite3";
-import { DB } from "./db";
+import { DB } from "./getDB";
+import { RideInput } from "./types";
+
+export const VALIDATION_ERROR = "VALIDATION_ERROR";
+export const RIDES_NOT_FOUND_ERROR = "RIDES_NOT_FOUND_ERROR";
+export const SERVER_ERROR = "SERVER_ERROR";
 
 const app = express();
 const jsonParser = bodyParser.json();
 
 app.use(cors());
-
-type Ride = {
-  startLat: number | string;
-  startLong: number | string;
-  endLat: number | string;
-  endLong: number | string;
-  riderName: string;
-  driverName: string;
-  driverVehicle: string;
-};
 
 export default (db: DB): Application => {
   app.get("/health", (req, res) => res.send("Healthy"));
@@ -31,7 +26,7 @@ export default (db: DB): Application => {
       riderName,
       driverName,
       driverVehicle,
-    } = req.body as Ride;
+    } = req.body as RideInput;
     const startLatitude = Number(startLat);
     const startLongitude = Number(startLong);
     const endLatitude = Number(endLat);
@@ -44,7 +39,7 @@ export default (db: DB): Application => {
       startLongitude > 180
     ) {
       return res.status(422).send({
-        error_code: "VALIDATION_ERROR",
+        error_code: VALIDATION_ERROR,
         message:
           "Start latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively",
       });
@@ -57,7 +52,7 @@ export default (db: DB): Application => {
       endLongitude > 180
     ) {
       return res.status(422).send({
-        error_code: "VALIDATION_ERROR",
+        error_code: VALIDATION_ERROR,
         message:
           "End latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively",
       });
@@ -65,21 +60,21 @@ export default (db: DB): Application => {
 
     if (typeof riderName !== "string" || riderName.length < 1) {
       return res.status(422).send({
-        error_code: "VALIDATION_ERROR",
+        error_code: VALIDATION_ERROR,
         message: "Rider name must be a non empty string",
       });
     }
 
     if (typeof driverName !== "string" || driverName.length < 1) {
       return res.status(422).send({
-        error_code: "VALIDATION_ERROR",
+        error_code: VALIDATION_ERROR,
         message: "Rider name must be a non empty string",
       });
     }
 
     if (typeof driverVehicle !== "string" || driverVehicle.length < 1) {
       return res.status(422).send({
-        error_code: "VALIDATION_ERROR",
+        error_code: VALIDATION_ERROR,
         message: "Rider name must be a non empty string",
       });
     }
@@ -102,7 +97,7 @@ export default (db: DB): Application => {
       );
     } catch {
       return res.status(500).send({
-        error_code: "SERVER_ERROR",
+        error_code: SERVER_ERROR,
         message: "Unknown error",
       });
     }
@@ -114,7 +109,7 @@ export default (db: DB): Application => {
       res.send(rows[0]);
     } catch {
       return res.status(500).send({
-        error_code: "SERVER_ERROR",
+        error_code: SERVER_ERROR,
         message: "Unknown error",
       });
     }
@@ -134,14 +129,14 @@ export default (db: DB): Application => {
       const rows = await db.all(sqlQuery);
       if (rows.length === 0) {
         return res.status(404).send({
-          error_code: "RIDES_NOT_FOUND_ERROR",
+          error_code: RIDES_NOT_FOUND_ERROR,
           message: "Could not find any rides",
         });
       }
       res.send(rows);
     } catch {
       return res.status(500).send({
-        error_code: "SERVER_ERROR",
+        error_code: SERVER_ERROR,
         message: "Unknown error",
       });
     }
@@ -154,14 +149,14 @@ export default (db: DB): Application => {
       );
       if (rows.length === 0) {
         return res.status(404).send({
-          error_code: "RIDES_NOT_FOUND_ERROR",
+          error_code: RIDES_NOT_FOUND_ERROR,
           message: "Could not find any rides",
         });
       }
       res.send(rows[0]);
     } catch {
       return res.status(500).send({
-        error_code: "SERVER_ERROR",
+        error_code: SERVER_ERROR,
         message: "Unknown error",
       });
     }

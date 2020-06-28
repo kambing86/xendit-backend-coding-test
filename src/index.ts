@@ -2,12 +2,13 @@ import fs from "fs";
 import jsyaml from "js-yaml";
 import swaggerUi, { JsonObject } from "swagger-ui-express";
 import app from "./app";
-import db from "./db";
+import getDB from "./getDB";
 import buildSchemas from "./schemas";
 
 const port = 8010;
 
 (async () => {
+  const db = getDB();
   await db.serialize();
   await buildSchemas(db);
 

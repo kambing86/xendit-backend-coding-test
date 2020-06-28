@@ -27,9 +27,10 @@ function getDB() {
         });
       });
     },
+    close: promisify(db.close).bind(db),
   };
 }
 
 export type DB = ReturnType<typeof getDB>;
 
-export default getDB();
+export default getDB;
