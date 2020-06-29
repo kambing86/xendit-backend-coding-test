@@ -1,7 +1,8 @@
 import { DB } from "./getDB";
+import SQL from "@nearform/sql";
 
 export default async (db: DB): Promise<DB> => {
-  const createRideTableSchema = `
+  const createRideTableSchema = SQL`
         CREATE TABLE Rides
         (
           rideID INTEGER PRIMARY KEY AUTOINCREMENT,

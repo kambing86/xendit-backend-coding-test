@@ -1,3 +1,4 @@
+import SQL from "@nearform/sql";
 import bodyParser from "body-parser";
 import { Application } from "express";
 import { RunResult } from "sqlite3";
@@ -69,21 +70,14 @@ export default (app: Application, db: DB): void => {
       });
     }
 
-    const values = [
-      startLat,
-      startLong,
-      endLat,
-      endLong,
-      riderName,
-      driverName,
-      driverVehicle,
-    ];
-
     let result: RunResult;
     try {
       result = await db.run(
-        "INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        values,
+        SQL`
+        INSERT INTO Rides
+        (startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle)
+        VALUES 
+        (${startLat}, ${startLong}, ${endLat}, ${endLong}, ${riderName}, ${driverName}, ${driverVehicle})`,
       );
     } catch {
       return res.status(500).send({
@@ -93,8 +87,7 @@ export default (app: Application, db: DB): void => {
     }
     try {
       const rows = await db.all(
-        "SELECT * FROM Rides WHERE rideID = ?",
-        result.lastID,
+        SQL`SELECT * FROM Rides WHERE rideID = ${result.lastID}`,
       );
       res.send(rows[0]);
     } catch {

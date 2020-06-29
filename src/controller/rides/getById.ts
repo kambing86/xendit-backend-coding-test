@@ -1,12 +1,13 @@
 import { Application } from "express";
 import { RIDES_NOT_FOUND_ERROR, SERVER_ERROR } from "~/constants";
 import { DB } from "~/db";
+import SQL from "@nearform/sql";
 
 export default (app: Application, db: DB): void => {
   app.get("/rides/:id", async (req, res) => {
     try {
       const rows = await db.all(
-        `SELECT * FROM Rides WHERE rideID='${req.params.id}'`,
+        SQL`SELECT * FROM Rides WHERE rideID=${req.params.id}`,
       );
       if (rows.length === 0) {
         return res.status(404).send({
