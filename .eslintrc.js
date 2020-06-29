@@ -17,7 +17,6 @@ module.exports = {
   rules: {
     "@typescript-eslint/ban-ts-comment": ["warn"],
     "@typescript-eslint/explicit-function-return-type": ["off"],
-    "@typescript-eslint/no-angle-bracket-type-assertion": ["off"], // can be removed after react-scripts update
     "@typescript-eslint/tslint/config": [
       "warn",
       {

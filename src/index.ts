@@ -15,6 +15,6 @@ const port = 8010;
   );
 
   const spec = fs.readFileSync("./doc/swagger.yml", "utf8");
-  const oasDoc = jsyaml.safeLoad(spec) as JsonObject;
+  const oasDoc = <JsonObject>jsyaml.safeLoad(spec);
   application.use("/api-docs", swaggerUi.serve, swaggerUi.setup(oasDoc));
 })();

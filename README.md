@@ -8,7 +8,10 @@
 
 ## Documentation
 
-Documentation is written using Swagger Specification, please run `npm start` and explore `http://localhost:8010/api-docs` for more info
+Documentation is written using Swagger Specification, please follow steps below
+
+1. run `npm start`
+2. explore `http://localhost:8010/api-docs` for more info
 
 ## Tooling
 
@@ -18,3 +21,8 @@ Documentation is written using Swagger Specification, please run `npm start` and
 - `husky` to replace `pre-push`
   - can do more than `pre-push` and well maintained
   - use `pre-commit` hook with `lint-staged` to execute `prettier` and `npm run lint`
+
+## Load Testing
+
+1. run `npm start`
+2. run `npn run test:load` in another terminal
