@@ -15,7 +15,7 @@ jobs:
     - name: prettier
       script: npm run prettier
     - stage: test
-      name: jest
+      name: mocha
       script: npm run test
     - stage: build
       name: build
