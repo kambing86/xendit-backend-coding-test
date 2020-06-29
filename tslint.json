@@ -4,6 +4,7 @@
     "export-name": { "severity": "off" },
     "import-name": { "severity": "off" },
     "no-backbone-get-set-outside-model": { "severity": "off" },
-    "no-relative-imports": { "severity": "off" }
+    "no-relative-imports": { "severity": "off" },
+    "max-func-body-length": { "severity": "off" }
   }
 }

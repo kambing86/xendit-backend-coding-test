@@ -1,3 +1,4 @@
+import { SqlStatement } from "@nearform/sql";
 import Sqlite3, { RunResult } from "sqlite3";
 import { promisify } from "util";
 
@@ -7,9 +8,9 @@ function getDB(filename: string) {
 
   return {
     serialize: promisify(db.serialize).bind(db),
-    run: (sql: string, params?: unknown): Promise<RunResult> => {
+    run: (sql: SqlStatement): Promise<RunResult> => {
       return new Promise((resolve, reject) => {
-        db.run(sql, params, function (err) {
+        db.run(sql.sql, sql.values, function (err) {
           if (err) {
             return reject(err);
           }
@@ -17,9 +18,9 @@ function getDB(filename: string) {
         });
       });
     },
-    all: (sql: string, params?: unknown): Promise<unknown[]> => {
+    all: (sql: SqlStatement, params?: unknown): Promise<unknown[]> => {
       return new Promise((resolve, reject) => {
-        db.all(sql, params, (err, rows) => {
+        db.all(sql.sql, sql.values, (err, rows) => {
           if (err) {
             return reject(err);
           }

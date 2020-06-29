@@ -1,18 +1,19 @@
 import { Application } from "express";
 import { RIDES_NOT_FOUND_ERROR, SERVER_ERROR } from "~/constants";
 import { DB } from "~/db";
+import SQL from "@nearform/sql";
 
 export default (app: Application, db: DB): void => {
   app.get("/rides", async (req, res) => {
     const { offset, limit } = req.query;
-    let sqlQuery = `SELECT * FROM Rides`;
+    const sqlQuery = SQL`SELECT * FROM Rides`;
     if (limit !== undefined) {
-      sqlQuery = `${sqlQuery} LIMIT ${limit}`;
+      sqlQuery.append(SQL` LIMIT ${limit}`);
     } else {
-      sqlQuery = `${sqlQuery} LIMIT 100`;
+      sqlQuery.append(SQL` LIMIT 100`);
     }
     if (offset !== undefined) {
-      sqlQuery = `${sqlQuery} OFFSET ${offset}`;
+      sqlQuery.append(SQL` OFFSET ${offset}`);
     }
 
     try {
