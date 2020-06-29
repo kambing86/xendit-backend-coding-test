@@ -1,0 +1,22 @@
+language: node_js
+node_js: node
+stages:
+  - quality
+  - test
+  - build
+cache:
+  - directories:
+      - ./dist
+jobs:
+  include:
+    - stage: quality
+      name: lint
+      script: npm run lint
+    - name: prettier
+      script: npm run prettier
+    - stage: test
+      name: jest
+      script: npm run test
+    - stage: build
+      name: build
+      script: npm run build
