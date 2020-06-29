@@ -3,6 +3,7 @@ import jsyaml from "js-yaml";
 import swaggerUi, { JsonObject } from "swagger-ui-express";
 import app from "./app";
 import initDB from "./db";
+import logger from "./logger";
 
 const port = 8010;
 
@@ -10,9 +11,9 @@ const port = 8010;
   const db = await initDB(":memory:");
   const application = app(db);
 
-  application.listen(port, () =>
-    console.log(`App started and listening on port ${port}`),
-  );
+  application.listen(port, () => {
+    logger.info(`App started and listening on port ${port}`);
+  });
 
   const spec = fs.readFileSync("./doc/swagger.yml", "utf8");
   const oasDoc = <JsonObject>jsyaml.safeLoad(spec);
