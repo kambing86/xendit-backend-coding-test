@@ -6,6 +6,7 @@ import { RIDES_NOT_FOUND_ERROR, VALIDATION_ERROR } from "~/constants";
 import initDB, { DB } from "~/db";
 import { RideInput } from "~/types";
 import { requestToPromise } from "./helper";
+import SQL from "@nearform/sql";
 
 describe("Rides", () => {
   let db: DB, application: Application;
@@ -310,6 +311,17 @@ describe("Rides", () => {
         .expect("Content-Type", /application\/json/)
         .expect(({ body }) => {
           expect(body["error_code"]).to.eql(RIDES_NOT_FOUND_ERROR);
+        })
+        .expect(404, done);
+    });
+
+    it("should prevent sql injection attack", (done) => {
+      request(application)
+        .get("/rides/1;DELETE FROM Rides")
+        .expect("Content-Type", /application\/json/)
+        .expect(async () => {
+          const rows = await db.all(SQL`select * from rides`);
+          expect(rows).to.have.length.greaterThan(0);
         })
         .expect(404, done);
     });
