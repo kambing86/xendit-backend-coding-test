@@ -16,7 +16,7 @@ export default (app: Application, db: DB): void => {
       riderName,
       driverName,
       driverVehicle,
-    } = req.body as RideInput;
+    } = <RideInput>req.body;
     const startLatitude = Number(startLat);
     const startLongitude = Number(startLong);
     const endLatitude = Number(endLat);
