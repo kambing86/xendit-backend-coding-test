@@ -17,8 +17,6 @@
     },
     "prefer-type-cast": { "severity": "off" },
     "use-simple-attributes": { "severity": "off" },
-    "no-suspicious-comment": { "severity": "off" },
-    "max-func-body-length": { "severity": "off" },
-    "mocha-no-side-effect-code": { "severity": "off" }
+    "no-suspicious-comment": { "severity": "off" }
   }
 }

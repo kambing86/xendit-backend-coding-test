@@ -1,9 +1,9 @@
-import { RunResult, verbose } from "sqlite3";
+import Sqlite3, { RunResult } from "sqlite3";
 import { promisify } from "util";
 
-function getDB() {
-  const sqlite3 = verbose();
-  const db = new sqlite3.Database(":memory:");
+function getDB(filename: string) {
+  const sqlite3 = Sqlite3.verbose();
+  const db = new sqlite3.Database(filename);
 
   return {
     serialize: promisify(db.serialize).bind(db),
