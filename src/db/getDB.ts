@@ -18,7 +18,7 @@ function getDB(filename: string) {
         });
       });
     },
-    all: (sql: SqlStatement, params?: unknown): Promise<unknown[]> => {
+    all: (sql: SqlStatement): Promise<unknown[]> => {
       return new Promise((resolve, reject) => {
         db.all(sql.sql, sql.values, (err, rows) => {
           if (err) {
